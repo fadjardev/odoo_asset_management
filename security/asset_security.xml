@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="res.groups.privilege" id="res_groups_privilege_asset">
+        <field name="name">Asset Management</field>
+        <field name="sequence">30</field>
+        <field name="category_id" ref="base.module_category_supply_chain"/>
+    </record>
+
+    <!-- Four levels, each implying the one below -->
+    <record id="group_asset_user" model="res.groups">
+        <field name="name">User: own assets and requests</field>
+        <field name="sequence">10</field>
+        <field name="privilege_id" ref="res_groups_privilege_asset"/>
+        <field name="implied_ids" eval="[Command.link(ref('base.group_user'))]"/>
+        <field name="comment">Sees the assets they hold and the available ones; requests handovers and returns; reports damage.</field>
+    </record>
+
+    <record id="group_asset_approver" model="res.groups">
+        <field name="name">Approver: department assets</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_asset"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_asset_user'))]"/>
+        <field name="comment">Also sees the assets of the departments they head and of their direct reports, and approves handovers and transfers for them.</field>
+    </record>
+
+    <record id="group_asset_officer" model="res.groups">
+        <field name="name">Officer: run the register</field>
+        <field name="sequence">30</field>
+        <field name="privilege_id" ref="res_groups_privilege_asset"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_asset_approver'))]"/>
+        <field name="comment">Manages the register, categories and locations; runs handovers, transfers, maintenance and stock opname; proposes disposals. Sees asset values.</field>
+    </record>
+
+    <record id="group_asset_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="sequence">40</field>
+        <field name="privilege_id" ref="res_groups_privilege_asset"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_asset_officer'))]"/>
+        <field name="user_ids" eval="[Command.link(ref('base.user_root')), Command.link(ref('base.user_admin'))]"/>
+        <field name="comment">Everything, including approving disposals, depreciation schedules and deleting records.</field>
+    </record>
+</odoo>

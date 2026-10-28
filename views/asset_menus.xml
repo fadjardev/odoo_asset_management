@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_asset_root" name="Assets" sequence="40"
+              web_icon="odoo_asset_management,static/description/icon.png"
+              groups="group_asset_user"/>
+
+    <menuitem id="menu_asset_overview" name="Overview" parent="menu_asset_root" sequence="1"
+              action="asset_asset_dashboard_action"/>
+
+    <menuitem id="menu_asset_operations" name="Operations" parent="menu_asset_root" sequence="10"/>
+    <menuitem id="menu_asset_asset" name="Assets" parent="menu_asset_operations" sequence="1"
+              action="asset_asset_action"/>
+    <menuitem id="menu_asset_assignment" name="Handovers" parent="menu_asset_operations" sequence="10"
+              action="asset_assignment_action"/>
+    <menuitem id="menu_asset_transfer" name="Transfers" parent="menu_asset_operations" sequence="20"
+              action="asset_transfer_action" groups="group_asset_approver"/>
+    <menuitem id="menu_asset_maintenance" name="Maintenance" parent="menu_asset_operations" sequence="30"
+              action="asset_maintenance_action"/>
+    <menuitem id="menu_asset_audit" name="Stock Opname" parent="menu_asset_operations" sequence="40"
+              action="asset_audit_action" groups="group_asset_officer"/>
+    <menuitem id="menu_asset_disposal" name="Disposals" parent="menu_asset_operations" sequence="50"
+              action="asset_disposal_action" groups="group_asset_officer"/>
+
+    <menuitem id="menu_asset_reporting" name="Reporting" parent="menu_asset_root" sequence="20"
+              groups="group_asset_officer"/>
+    <menuitem id="menu_asset_depreciation" name="Depreciation Schedule" parent="menu_asset_reporting" sequence="10"
+              action="asset_depreciation_line_action"/>
+
+    <menuitem id="menu_asset_config" name="Configuration" parent="menu_asset_root" sequence="90"
+              groups="group_asset_manager"/>
+    <menuitem id="menu_asset_category" name="Categories" parent="menu_asset_config" sequence="10"
+              action="asset_category_action"/>
+    <menuitem id="menu_asset_location" name="Locations" parent="menu_asset_config" sequence="20"
+              action="asset_location_action"/>
+
+</odoo>

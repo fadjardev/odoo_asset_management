@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="asset_assignment_view_list" model="ir.ui.view">
+        <field name="name">asset.assignment.list</field>
+        <field name="model">asset.assignment</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="asset_id"/>
+                <field name="employee_id"/>
+                <field name="department_id" optional="show"/>
+                <field name="date_request"/>
+                <field name="date_handover" optional="show"/>
+                <field name="date_expected_return" optional="hide"/>
+                <field name="return_requested" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'requested'" decoration-warning="state == 'approved'"
+                       decoration-success="state == 'in_use'" decoration-danger="state == 'rejected'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="asset_assignment_view_form" model="ir.ui.view">
+        <field name="name">asset.assignment.form</field>
+        <field name="model">asset.assignment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit" type="object" string="Submit Request" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_approve" type="object" string="Approve" class="btn-primary"
+                            invisible="state != 'requested'" groups="odoo_asset_management.group_asset_approver"/>
+                    <button name="action_reject" type="object" string="Reject"
+                            invisible="state != 'requested'" groups="odoo_asset_management.group_asset_approver"/>
+                    <button name="action_handover" type="object" string="Hand Over" class="btn-primary"
+                            invisible="state != 'approved'" groups="odoo_asset_management.group_asset_officer"/>
+                    <button name="action_request_return" type="object" string="Request Return"
+                            invisible="state != 'in_use' or return_requested"/>
+                    <button name="action_return" type="object" string="Receive Return" class="btn-primary"
+                            invisible="state != 'in_use'" groups="odoo_asset_management.group_asset_officer"/>
+                    <button name="%(odoo_asset_management.action_report_asset_handover)d" type="action"
+                            string="Print Handover Record" invisible="state not in ('in_use', 'returned')"/>
+                    <button name="action_reset_draft" type="object" string="Reset to Draft"
+                            invisible="state != 'rejected'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,requested,approved,in_use,returned"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="asset_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="employee_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="department_id"/>
+                            <field name="requested_by_id"/>
+                        </group>
+                        <group>
+                            <field name="date_request" readonly="state != 'draft'"/>
+                            <field name="date_expected_return" readonly="state != 'draft'"/>
+                            <field name="date_handover"/>
+                            <field name="date_return"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="condition_out"/>
+                            <field name="condition_in" readonly="state != 'in_use'"/>
+                        </group>
+                        <group>
+                            <field name="return_requested"/>
+                        </group>
+                    </group>
+                    <field name="purpose" placeholder="What is the asset needed for?" readonly="state != 'draft'"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="asset_assignment_view_search" model="ir.ui.view">
+        <field name="name">asset.assignment.search</field>
+        <field name="model">asset.assignment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="asset_id"/>
+                <field name="employee_id"/>
+                <filter name="mine" string="My Requests" domain="[('employee_id.user_id', '=', uid)]"/>
+                <separator/>
+                <filter name="to_approve" string="To Approve" domain="[('state', '=', 'requested')]"/>
+                <filter name="to_handover" string="To Hand Over" domain="[('state', '=', 'approved')]"/>
+                <filter name="in_use" string="Handed Over" domain="[('state', '=', 'in_use')]"/>
+                <filter name="return_requested" string="Return Requested" domain="[('return_requested', '=', True)]"/>
+                <group>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="asset_assignment_action" model="ir.actions.act_window">
+        <field name="name">Handovers</field>
+        <field name="res_model">asset.assignment</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Request an asset</p>
+            <p>Pick an available asset; your approver signs it off, then an asset officer hands it over.</p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_asset_label" model="ir.actions.report">
+        <field name="name">QR Label</field>
+        <field name="model">asset.asset</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">odoo_asset_management.report_asset_label</field>
+        <field name="report_file">odoo_asset_management.report_asset_label</field>
+        <field name="print_report_name">'Label - %s' % object.code</field>
+        <field name="binding_model_id" ref="model_asset_asset"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_asset_handover" model="ir.actions.report">
+        <field name="name">Handover Record</field>
+        <field name="model">asset.assignment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">odoo_asset_management.report_asset_handover</field>
+        <field name="report_file">odoo_asset_management.report_asset_handover</field>
+        <field name="print_report_name">'Handover - %s' % object.name.replace('/', '-')</field>
+        <field name="binding_model_id" ref="model_asset_assignment"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_asset_audit" model="ir.actions.report">
+        <field name="name">Stock Opname Result</field>
+        <field name="model">asset.audit</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">odoo_asset_management.report_asset_audit</field>
+        <field name="report_file">odoo_asset_management.report_asset_audit</field>
+        <field name="print_report_name">'Stock Opname - %s' % object.name.replace('/', '-')</field>
+        <field name="binding_model_id" ref="model_asset_audit"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

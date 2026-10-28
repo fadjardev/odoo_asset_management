@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- QR labels to stick on the assets, three to a row; the QR carries the asset code.
+         A table rather than the flex grid, which wkhtmltopdf does not lay out. -->
+    <template id="report_asset_label">
+        <t t-call="web.html_container">
+            <div class="page">
+                <table style="width: 100%; border-collapse: separate; border-spacing: 8px;">
+                    <t t-foreach="range(0, len(docs), 3)" t-as="row_start">
+                        <tr style="page-break-inside: avoid;">
+                            <t t-foreach="docs[row_start:row_start + 3]" t-as="asset">
+                                <td style="width: 33%; border: 1px solid #999; padding: 8px; text-align: center; vertical-align: top;">
+                                    <img t-if="asset.qr_code" t-att-src="image_data_uri(asset.qr_code)" style="width: 120px; height: 120px;" alt="QR"/>
+                                    <div style="font-weight: bold; margin-top: 4px;" t-out="asset.code"/>
+                                    <div style="font-size: 11px;" t-out="asset.name"/>
+                                    <div style="font-size: 10px; color: #666;" t-out="asset.company_id.name"/>
+                                </td>
+                            </t>
+                        </tr>
+                    </t>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_asset_handover">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h3 class="text-center">Asset Handover Record</h3>
+                        <p class="text-center"><span t-out="doc.name"/></p>
+                        <table class="table table-sm mt-4">
+                            <tr><th>Asset</th><td><span t-out="doc.asset_id.code"/> - <span t-out="doc.asset_id.name"/></td></tr>
+                            <tr><th>Serial Number</th><td t-out="doc.asset_id.serial_number or '-'"/></tr>
+                            <tr><th>Employee</th><td t-out="doc.employee_id.name"/></tr>
+                            <tr><th>Department</th><td t-out="doc.department_id.name or '-'"/></tr>
+                            <tr><th>Handed Over</th><td><span t-field="doc.date_handover"/></td></tr>
+                            <tr><th>Condition at Handover</th><td><span t-field="doc.condition_out"/></td></tr>
+                            <tr t-if="doc.date_return"><th>Returned</th><td><span t-field="doc.date_return"/></td></tr>
+                            <tr t-if="doc.condition_in"><th>Condition at Return</th><td><span t-field="doc.condition_in"/></td></tr>
+                            <tr t-if="doc.purpose"><th>Purpose</th><td t-out="doc.purpose"/></tr>
+                        </table>
+                        <p class="mt-4">The employee confirms receipt of the asset above in the stated condition and is responsible for it until it is returned.</p>
+                        <div class="row mt-5 text-center">
+                            <div class="col-6">
+                                <p>Handed over by</p>
+                                <br/><br/><br/>
+                                <p>( ............................ )</p>
+                            </div>
+                            <div class="col-6">
+                                <p>Received by</p>
+                                <br/><br/><br/>
+                                <p>( <span t-out="doc.employee_id.name"/> )</p>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_asset_audit">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h3>Stock Opname <span t-out="doc.name"/></h3>
+                        <p>
+                            Location: <strong t-out="doc.location_id.complete_name"/><br/>
+                            Date: <span t-field="doc.date"/><br/>
+                            Auditor: <span t-out="doc.auditor_id.name"/>
+                        </p>
+                        <p>
+                            <span t-out="doc.count_total"/> assets:
+                            <span t-out="doc.count_found"/> found,
+                            <span t-out="doc.count_damaged"/> damaged,
+                            <span t-out="doc.count_missing"/> not found.
+                        </p>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr><th>Code</th><th>Asset</th><th>Holder</th><th>Result</th><th>Condition</th><th>Note</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="doc.line_ids" t-as="line">
+                                    <td t-out="line.asset_code"/>
+                                    <td t-out="line.asset_id.name"/>
+                                    <td t-out="line.holder_id.name or ''"/>
+                                    <td><span t-field="line.result"/></td>
+                                    <td><span t-field="line.condition"/></td>
+                                    <td t-out="line.note or ''"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

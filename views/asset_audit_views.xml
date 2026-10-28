@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="asset_audit_view_list" model="ir.ui.view">
+        <field name="name">asset.audit.list</field>
+        <field name="model">asset.audit</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="date"/>
+                <field name="location_id"/>
+                <field name="auditor_id"/>
+                <field name="count_total" string="Assets"/>
+                <field name="count_missing" string="Not Found"/>
+                <field name="count_damaged" string="Damaged"/>
+                <field name="state" widget="badge" decoration-warning="state == 'in_progress'" decoration-success="state == 'done'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="asset_audit_view_form" model="ir.ui.view">
+        <field name="name">asset.audit.form</field>
+        <field name="model">asset.audit</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_start" type="object" string="Start Count" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_validate" type="object" string="Validate" class="btn-primary"
+                            invisible="state != 'in_progress'"/>
+                    <button name="%(odoo_asset_management.action_report_asset_audit)d" type="action"
+                            string="Print Result" invisible="state not in ('in_progress', 'done')"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state not in ('draft', 'in_progress')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="location_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="date" readonly="state == 'done'"/>
+                            <field name="auditor_id" readonly="state == 'done'"/>
+                        </group>
+                        <group>
+                            <field name="count_total" string="Assets"/>
+                            <field name="count_found" string="Found"/>
+                            <field name="count_missing" string="Not Found"/>
+                            <field name="count_damaged" string="Found Damaged"/>
+                        </group>
+                    </group>
+                    <field name="line_ids" readonly="state != 'in_progress'" invisible="state == 'draft'">
+                        <list editable="bottom" create="false"
+                              decoration-danger="result == 'missing'" decoration-warning="result == 'damaged'"
+                              decoration-success="result == 'found'">
+                            <field name="asset_code"/>
+                            <field name="asset_id" readonly="1"/>
+                            <field name="expected_location_id"/>
+                            <field name="holder_id"/>
+                            <field name="result"/>
+                            <field name="condition"/>
+                            <field name="note"/>
+                        </list>
+                    </field>
+                    <field name="note" placeholder="Notes on the count"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="asset_audit_view_search" model="ir.ui.view">
+        <field name="name">asset.audit.search</field>
+        <field name="model">asset.audit</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="location_id" operator="child_of"/>
+                <filter name="open" string="Open" domain="[('state', 'in', ('draft', 'in_progress'))]"/>
+                <group>
+                    <filter name="group_location" string="Location" context="{'group_by': 'location_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="asset_audit_action" model="ir.actions.act_window">
+        <field name="name">Stock Opname</field>
+        <field name="res_model">asset.audit</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Count the assets at a location</p>
+            <p>Start a count to load every asset recorded there, mark each one found, missing or damaged, then validate to update the register.</p>
+        </field>
+    </record>
+
+</odoo>

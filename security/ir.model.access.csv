@@ -1,0 +1,24 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_asset_category_user,asset.category user,model_asset_category,group_asset_user,1,0,0,0
+access_asset_category_officer,asset.category officer,model_asset_category,group_asset_officer,1,1,1,0
+access_asset_category_manager,asset.category manager,model_asset_category,group_asset_manager,1,1,1,1
+access_asset_location_user,asset.location user,model_asset_location,group_asset_user,1,0,0,0
+access_asset_location_officer,asset.location officer,model_asset_location,group_asset_officer,1,1,1,0
+access_asset_location_manager,asset.location manager,model_asset_location,group_asset_manager,1,1,1,1
+access_asset_asset_user,asset.asset user,model_asset_asset,group_asset_user,1,0,0,0
+access_asset_asset_officer,asset.asset officer,model_asset_asset,group_asset_officer,1,1,1,0
+access_asset_asset_manager,asset.asset manager,model_asset_asset,group_asset_manager,1,1,1,1
+access_asset_depreciation_line_officer,asset.depreciation.line officer,model_asset_depreciation_line,group_asset_officer,1,0,0,0
+access_asset_depreciation_line_manager,asset.depreciation.line manager,model_asset_depreciation_line,group_asset_manager,1,1,1,1
+access_asset_assignment_user,asset.assignment user,model_asset_assignment,group_asset_user,1,1,1,0
+access_asset_assignment_manager,asset.assignment manager,model_asset_assignment,group_asset_manager,1,1,1,1
+access_asset_transfer_approver,asset.transfer approver,model_asset_transfer,group_asset_approver,1,1,0,0
+access_asset_transfer_officer,asset.transfer officer,model_asset_transfer,group_asset_officer,1,1,1,0
+access_asset_transfer_manager,asset.transfer manager,model_asset_transfer,group_asset_manager,1,1,1,1
+access_asset_maintenance_user,asset.maintenance user,model_asset_maintenance,group_asset_user,1,1,1,0
+access_asset_maintenance_manager,asset.maintenance manager,model_asset_maintenance,group_asset_manager,1,1,1,1
+access_asset_audit_officer,asset.audit officer,model_asset_audit,group_asset_officer,1,1,1,0
+access_asset_audit_manager,asset.audit manager,model_asset_audit,group_asset_manager,1,1,1,1
+access_asset_audit_line_officer,asset.audit.line officer,model_asset_audit_line,group_asset_officer,1,1,1,1
+access_asset_disposal_officer,asset.disposal officer,model_asset_disposal,group_asset_officer,1,1,1,0
+access_asset_disposal_manager,asset.disposal manager,model_asset_disposal,group_asset_manager,1,1,1,1

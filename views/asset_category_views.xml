@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="asset_category_view_list" model="ir.ui.view">
+        <field name="name">asset.category.list</field>
+        <field name="model">asset.category</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="depreciation_method"/>
+                <field name="useful_life_months"/>
+                <field name="asset_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="asset_category_view_form" model="ir.ui.view">
+        <field name="name">asset.category.form</field>
+        <field name="model">asset.category</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="depreciation_method"/>
+                            <field name="useful_life_months" invisible="depreciation_method == 'none'"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="asset_category_action" model="ir.actions.act_window">
+        <field name="name">Categories</field>
+        <field name="res_model">asset.category</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>
