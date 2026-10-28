@@ -1,6 +1,6 @@
 # Asset Management for Odoo 19
 
-> 🌐 [Baca dalam Bahasa Indonesia](README-id.md)
+> [Baca dalam Bahasa Indonesia](README-id.md)
 
 An Odoo 19 module for running a company's fixed assets end to end: a register with
 QR labels, handover to employees, transfers between locations, maintenance, stock
@@ -11,7 +11,7 @@ managers who sign off disposals.
 It runs on **Odoo Community** and depends only on `hr` and `mail`. It does not need
 the Enterprise `account_asset` module.
 
-## 🚀 Features
+## Features
 
 | Area | What it does |
 | --- | --- |
@@ -24,7 +24,7 @@ the Enterprise `account_asset` module.
 | **Disposal** | Sell, scrap or donate an asset after manager approval; the book value is frozen, the gain or loss computed, and the remaining depreciation schedule closed. |
 | **Depreciation** | Monthly straight-line schedule down to the salvage value; a daily job posts the lines that fall due, and the book value follows. |
 
-## 📦 Installation
+## Installation
 
 The module folder must be named `odoo_asset_management`. Clone it straight into a
 directory on your `addons_path`:
@@ -58,7 +58,7 @@ docker exec odoo-app odoo -c /etc/odoo/odoo.conf -d <database> \
 docker restart odoo-app
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 1. **Give people a level.** *Settings › Users*, open a user, and under
    **Asset Management** pick User, Approver, Officer or Manager. The administrator
@@ -71,7 +71,7 @@ docker restart odoo-app
 4. **Locations** (*Assets › Configuration › Locations*): nest them as deep as you need.
    Searching and counting a location includes everything below it.
 
-## 🔐 Access levels
+## Access levels
 
 Each level includes everything of the level below it.
 
@@ -113,25 +113,36 @@ The rules are enforced on the server, not just by hiding buttons:
   through the action buttons.
 - Value fields carry field-level groups, so staff cannot read them even through the API.
 
-## 🔄 Workflows
+## Workflows
 
-```
-Asset       Draft ──► Available ──► In Use ──► Available ──► Disposed
-                          │                        ▲
-                          └──► Under Maintenance ──┘
+### Asset status
 
-Handover    Draft ──► Requested ──► Approved ──► Handed Over ──► Returned
-                          └──► Rejected
-Transfer    Draft ──► Waiting Approval ──► Approved ──► Done
-Maintenance Requested ──► Scheduled ──► In Progress ──► Done (──► next preventive, Scheduled)
-Opname      Draft ──► Counting ──► Validated
-Disposal    Draft ──► Waiting Approval ──► Approved ──► Done
-```
+The status of an asset changes only through the documents around it: a handover
+puts it in use, a maintenance order takes it out of service and brings it back to
+where it was, and an approved disposal removes it from the register.
 
-Only an *Available* asset can be handed over or disposed. An asset in use must be
-returned first, and one under maintenance must have its work closed.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/asset-status-dark.svg">
+  <img alt="Asset status lifecycle: Draft, Available, In Use, Under Maintenance and Disposed, with the document that drives each transition" src="docs/images/asset-status-light.svg">
+</picture>
 
-## 🧾 Reports
+### Handover
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/asset-handover-dark.svg">
+  <img alt="Handover workflow across the employee, approver, asset officer and the asset register" src="docs/images/asset-handover-light.svg">
+</picture>
+
+### Other documents
+
+| Document | Steps | Who moves it |
+| --- | --- | --- |
+| Transfer | Draft → Waiting Approval → Approved → Done, or Cancelled before Done | an officer creates, submits and marks it moved; an approver of the assets (or an officer) approves |
+| Maintenance | Requested → Scheduled → In Progress → Done, or Cancelled | anyone reports damage; an officer schedules, starts and closes it; finished preventive work schedules its next occurrence |
+| Stock opname | Draft → Counting → Validated, or Cancelled | an officer |
+| Disposal | Draft → Waiting Approval → Approved → Done, or Cancelled | an officer proposes and carries it out; a manager approves |
+
+## Reports
 
 | Report | From |
 | --- | --- |
@@ -139,14 +150,14 @@ returned first, and one under maintenance must have its work closed.
 | Handover Record | Handover, once handed over |
 | Stock Opname Result | Stock opname, while counting or after validation |
 
-## ⏱️ Scheduled actions
+## Scheduled actions
 
 | Job | Runs | Does |
 | --- | --- | --- |
 | Assets: post due depreciation | daily | marks every schedule line dated today or earlier as posted |
 | Assets: schedule next preventive maintenance | daily | creates the next occurrence for completed preventive work that has none yet |
 
-## 🧩 Technical overview
+## Technical overview
 
 | Model | Purpose |
 | --- | --- |
@@ -164,6 +175,7 @@ returned first, and one under maintenance must have its work closed.
 ```
 odoo_asset_management/
 ├── data/        sequences, scheduled actions
+├── docs/        README diagrams (images/) and their Archify sources (diagrams/)
 ├── models/      the models above
 ├── report/      QR label, handover record, opname result
 ├── security/    groups, access rights, record rules
@@ -182,12 +194,12 @@ odoo -c /etc/odoo/odoo.conf -d <test-database> -i odoo_asset_management \
 The 20 tests cover every workflow and the access matrix above. They use their own
 records, so they pass on a database that already holds data.
 
-## 📋 Requirements
+## Requirements
 
 - Odoo 19.0 (Community or Enterprise)
 - Modules: `hr`, `mail`
 - `wkhtmltopdf` for the PDF reports. It ships with the official Odoo Docker image.
 
-## 📄 License
+## License
 
 [LGPL-3](LICENSE). See [CHANGELOG.md](CHANGELOG.md) for the release history.

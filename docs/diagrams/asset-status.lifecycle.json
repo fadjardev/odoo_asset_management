@@ -1,0 +1,37 @@
+{
+  "schema_version": 2,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Asset Status Lifecycle",
+    "output": ".archify/lifecycle-asset-status-20261028-150828/asset-status.html",
+    "locale": "en",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    { "id": "main", "label": "Register" },
+    { "id": "service", "label": "Maintenance" },
+    { "id": "terminal", "label": "Leaves the register" }
+  ],
+  "states": [
+    { "id": "draft", "type": "start", "label": "Draft", "sublabel": "registered, code issued", "lane": "main", "col": 0, "step": "01" },
+    { "id": "available", "type": "waiting", "label": "Available", "sublabel": "no holder, can be requested", "lane": "main", "col": 1, "step": "02" },
+    { "id": "in_use", "type": "active", "label": "In Use", "sublabel": "held by an employee", "lane": "main", "col": 3, "step": "03" },
+    { "id": "maintenance", "type": "decision", "label": "Under Maintenance", "sublabel": "work order in progress", "lane": "service", "col": 2 },
+    { "id": "disposed", "type": "failure", "label": "Disposed", "sublabel": "sold, scrapped or donated", "lane": "terminal", "col": 1, "tag": "terminal" }
+  ],
+  "transitions": [
+    { "from": "draft", "to": "available", "label": "confirm" },
+    { "from": "available", "to": "in_use", "label": "handover", "variant": "emphasis" },
+    { "from": "in_use", "to": "available", "label": "return", "route": "top-channel" },
+    { "from": "available", "to": "maintenance", "label": "start work", "variant": "dashed" },
+    { "from": "in_use", "to": "maintenance", "label": "start work", "variant": "dashed" },
+    { "from": "maintenance", "to": "available", "label": "done" },
+    { "from": "maintenance", "to": "in_use", "label": "done" },
+    { "from": "available", "to": "disposed", "label": "disposal approved", "variant": "security" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "What moves an asset", "items": ["Confirm: an officer, on the asset", "Handover and return: a handover document", "Start work and done: a maintenance order", "Disposal: a disposal a manager approved"] },
+    { "dot": "amber", "title": "Maintenance returns it where it was", "items": ["Done restores the status held before the work started", "An asset already under maintenance cannot start another order"] },
+    { "dot": "rose", "title": "Condition is tracked separately", "items": ["Good, minor damage, major damage or lost", "Stock opname marks an asset not found as lost", "Only an available asset can be handed over or disposed"] }
+  ]
+}

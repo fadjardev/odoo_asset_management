@@ -1,6 +1,6 @@
 # Asset Management untuk Odoo 19
 
-> 🌐 [Read in English](README.md)
+> [Read in English](README.md)
 
 Modul Odoo 19 untuk mengelola aset tetap perusahaan dari awal sampai akhir: register
 dengan label QR, serah terima ke karyawan, mutasi antar lokasi, maintenance, stock
@@ -11,7 +11,7 @@ sampai manager yang menyetujui disposal.
 Modul berjalan di **Odoo Community** dan hanya membutuhkan `hr` dan `mail`. Modul
 `account_asset` milik Enterprise tidak diperlukan.
 
-## 🚀 Fitur
+## Fitur
 
 | Area | Fungsi |
 | --- | --- |
@@ -24,7 +24,7 @@ Modul berjalan di **Odoo Community** dan hanya membutuhkan `hr` dan `mail`. Modu
 | **Disposal** | Menjual, membuang atau menghibahkan aset setelah disetujui manager; nilai buku dibekukan, laba/rugi dihitung, sisa jadwal penyusutan ditutup. |
 | **Penyusutan** | Jadwal garis lurus bulanan sampai nilai residu; job harian memposting baris yang sudah jatuh tempo, dan nilai buku mengikutinya. |
 
-## 📦 Instalasi
+## Instalasi
 
 Folder modul harus bernama `odoo_asset_management`. Clone langsung ke folder yang
 ada di `addons_path`:
@@ -58,7 +58,7 @@ docker exec odoo-app odoo -c /etc/odoo/odoo.conf -d <database> \
 docker restart odoo-app
 ```
 
-## ⚙️ Konfigurasi
+## Konfigurasi
 
 1. **Beri level ke tiap user.** *Settings › Users*, buka user, lalu di bagian
    **Asset Management** pilih User, Approver, Officer atau Manager. Administrator
@@ -71,7 +71,7 @@ docker restart odoo-app
 4. **Lokasi** (*Assets › Configuration › Locations*): boleh bertingkat sedalam apa
    pun. Pencarian dan stock opname di suatu lokasi ikut mencakup semua sub-lokasinya.
 
-## 🔐 Level akses
+## Level akses
 
 Setiap level mendapat semua hak level di bawahnya.
 
@@ -114,26 +114,37 @@ Aturan ini ditegakkan di server, bukan sekadar menyembunyikan tombol:
 - Field nilai memakai group di level field, sehingga staf tidak bisa membacanya
   bahkan lewat API.
 
-## 🔄 Alur kerja
+## Alur kerja
 
-```
-Aset         Draft ──► Available ──► In Use ──► Available ──► Disposed
-                           │                        ▲
-                           └──► Under Maintenance ──┘
+### Status aset
 
-Serah terima Draft ──► Requested ──► Approved ──► Handed Over ──► Returned
-                           └──► Rejected
-Mutasi       Draft ──► Waiting Approval ──► Approved ──► Done
-Maintenance  Requested ──► Scheduled ──► In Progress ──► Done (──► preventive berikutnya, Scheduled)
-Opname       Draft ──► Counting ──► Validated
-Disposal     Draft ──► Waiting Approval ──► Approved ──► Done
-```
+Status aset hanya berubah lewat dokumen di sekitarnya: serah terima membuatnya
+dipakai, order maintenance mengeluarkannya dari layanan lalu mengembalikannya ke
+status semula, dan disposal yang disetujui mengeluarkannya dari register.
+Diagram memakai istilah status berbahasa Inggris, sama seperti di aplikasi.
 
-Hanya aset berstatus *Available* yang bisa diserahkan atau di-dispose. Aset yang
-sedang dipakai harus dikembalikan dulu, dan aset yang sedang maintenance harus
-ditutup pekerjaannya dulu.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/asset-status-dark.svg">
+  <img alt="Lifecycle status aset: Draft, Available, In Use, Under Maintenance dan Disposed, beserta dokumen pemicu tiap transisi" src="docs/images/asset-status-light.svg">
+</picture>
 
-## 🧾 Laporan
+### Serah terima
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/asset-handover-dark.svg">
+  <img alt="Alur serah terima antara karyawan, approver, asset officer dan register aset" src="docs/images/asset-handover-light.svg">
+</picture>
+
+### Dokumen lainnya
+
+| Dokumen | Langkah | Siapa yang menjalankan |
+| --- | --- | --- |
+| Mutasi | Draft → Waiting Approval → Approved → Done, atau Cancelled sebelum Done | officer membuat, mengajukan dan menandai selesai; approver aset terkait (atau officer) menyetujui |
+| Maintenance | Requested → Scheduled → In Progress → Done, atau Cancelled | siapa pun melaporkan kerusakan; officer menjadwalkan, memulai dan menutup; preventive yang selesai menjadwalkan kunjungan berikutnya |
+| Stock opname | Draft → Counting → Validated, atau Cancelled | officer |
+| Disposal | Draft → Waiting Approval → Approved → Done, atau Cancelled | officer mengajukan dan melaksanakan; manager menyetujui |
+
+## Laporan
 
 | Laporan | Dari |
 | --- | --- |
@@ -141,14 +152,14 @@ ditutup pekerjaannya dulu.
 | Berita Acara Serah Terima | Serah terima, setelah diserahkan |
 | Hasil Stock Opname | Stock opname, saat penghitungan atau setelah validasi |
 
-## ⏱️ Scheduled action
+## Scheduled action
 
 | Job | Jadwal | Fungsi |
 | --- | --- | --- |
 | Assets: post due depreciation | harian | memposting setiap baris jadwal yang bertanggal hari ini atau sebelumnya |
 | Assets: schedule next preventive maintenance | harian | membuat jadwal berikutnya untuk maintenance preventive selesai yang belum punya jadwal lanjutan |
 
-## 🧩 Gambaran teknis
+## Gambaran teknis
 
 | Model | Fungsi |
 | --- | --- |
@@ -166,6 +177,7 @@ ditutup pekerjaannya dulu.
 ```
 odoo_asset_management/
 ├── data/        sequence, scheduled action
+├── docs/        diagram README (images/) dan sumber Archify-nya (diagrams/)
 ├── models/      model-model di atas
 ├── report/      label QR, berita acara, hasil opname
 ├── security/    group, hak akses, record rule
@@ -184,12 +196,12 @@ odoo -c /etc/odoo/odoo.conf -d <database-test> -i odoo_asset_management \
 Ke-20 test mencakup setiap alur kerja dan matriks akses di atas. Test memakai
 record-nya sendiri, jadi tetap lulus di database yang sudah berisi data.
 
-## 📋 Kebutuhan
+## Kebutuhan
 
 - Odoo 19.0 (Community atau Enterprise)
 - Modul: `hr`, `mail`
 - `wkhtmltopdf` untuk laporan PDF (sudah ada di image Docker resmi Odoo)
 
-## 📄 Lisensi
+## Lisensi
 
 [LGPL-3](LICENSE). Riwayat rilis ada di [CHANGELOG.md](CHANGELOG.md).

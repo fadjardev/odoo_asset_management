@@ -1,0 +1,220 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Asset Handover Workflow",
+    "output": ".archify/workflow-asset-handover-20261028-150828/asset-handover.html",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "legend": {
+      "entries": {
+        "frontend": {
+          "label": "Employee step"
+        },
+        "security": {
+          "label": "Approval gate"
+        },
+        "backend": {
+          "label": "Officer step"
+        },
+        "database": {
+          "label": "Asset record"
+        }
+      }
+    },
+    "viewBox": [
+      1120,
+      652
+    ]
+  },
+  "lanes": [
+    {
+      "id": "employee",
+      "label": "Employee (User)"
+    },
+    {
+      "id": "approver",
+      "label": "Approver"
+    },
+    {
+      "id": "officer",
+      "label": "Asset Officer"
+    },
+    {
+      "id": "register",
+      "label": "Asset register"
+    }
+  ],
+  "mainPath": [
+    "request",
+    "review",
+    "handover",
+    "in_use",
+    "ask_return",
+    "receive",
+    "available"
+  ],
+  "nodes": [
+    {
+      "id": "request",
+      "lane": "employee",
+      "col": 0,
+      "type": "frontend",
+      "icon": "person",
+      "label": "Request asset",
+      "sublabel": "an available one, for self",
+      "width": 160
+    },
+    {
+      "id": "review",
+      "lane": "approver",
+      "col": 1,
+      "type": "security",
+      "label": "Review request",
+      "sublabel": "dept head or manager",
+      "width": 160
+    },
+    {
+      "id": "rejected",
+      "lane": "approver",
+      "col": 2,
+      "type": "security",
+      "label": "Rejected",
+      "sublabel": "reset to draft to revise",
+      "width": 160
+    },
+    {
+      "id": "handover",
+      "lane": "officer",
+      "col": 2,
+      "type": "backend",
+      "label": "Hand over",
+      "sublabel": "condition at handover",
+      "width": 160
+    },
+    {
+      "id": "in_use",
+      "lane": "register",
+      "col": 3,
+      "type": "database",
+      "label": "Asset In Use",
+      "sublabel": "holder + department set",
+      "width": 160
+    },
+    {
+      "id": "ask_return",
+      "lane": "employee",
+      "col": 4,
+      "type": "frontend",
+      "icon": "person",
+      "label": "Ask to return",
+      "sublabel": "flags the handover",
+      "width": 160
+    },
+    {
+      "id": "receive",
+      "lane": "officer",
+      "col": 5,
+      "type": "backend",
+      "label": "Receive return",
+      "sublabel": "condition at return",
+      "width": 160
+    },
+    {
+      "id": "available",
+      "lane": "register",
+      "col": 5,
+      "type": "database",
+      "label": "Asset Available",
+      "sublabel": "holder cleared",
+      "width": 160
+    }
+  ],
+  "edges": [
+    {
+      "id": "submit",
+      "from": "request",
+      "to": "review",
+      "label": "submit",
+      "variant": "emphasis"
+    },
+    {
+      "id": "approve",
+      "from": "review",
+      "to": "handover",
+      "label": "approve",
+      "variant": "security"
+    },
+    {
+      "id": "reject",
+      "from": "review",
+      "to": "rejected",
+      "label": "reject",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "revise",
+      "from": "rejected",
+      "to": "request",
+      "label": "revise",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "assign",
+      "from": "handover",
+      "to": "in_use",
+      "label": "set holder",
+      "variant": "emphasis"
+    },
+    {
+      "id": "use",
+      "from": "in_use",
+      "to": "ask_return",
+      "variant": "dashed"
+    },
+    {
+      "id": "notify",
+      "from": "ask_return",
+      "to": "receive",
+      "label": "return",
+      "variant": "default"
+    },
+    {
+      "id": "release",
+      "from": "receive",
+      "to": "available",
+      "label": "clear holder",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "violet",
+      "title": "Who approves",
+      "items": [
+        "Heads of the employee's department and every department above it",
+        "The employee's own manager",
+        "Any asset officer or manager"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Enforced on the server",
+      "items": [
+        "Staff can only request for themselves",
+        "A submitted request can no longer be edited by staff",
+        "Status moves only through these steps, never by direct write"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Paper trail",
+      "items": [
+        "Print the handover record once handed over",
+        "Every step is logged in the chatter"
+      ]
+    }
+  ]
+}
