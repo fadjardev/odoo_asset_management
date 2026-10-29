@@ -98,6 +98,27 @@ class TestAssetFlow(AssetCase):
         lines[:3].posted = True
         self.assertAlmostEqual(asset.book_value, 12_000_000 - sum(lines[:3].mapped("amount")))
 
+    def test_asset_currency(self):
+        self.assertEqual(self._asset().currency_id, self.env.company.currency_id)
+
+        currency = self.env["res.currency"].with_context(active_test=False).search(
+            [("id", "!=", self.env.company.currency_id.id), ("rounding", "=", 0.01)], limit=1,
+        )
+        currency.active = True
+        asset = self._asset(currency_id=currency.id, purchase_value=1_000, salvage_value=0)
+        asset.with_user(self.manager).action_compute_depreciation()
+        lines = asset.depreciation_line_ids
+        self.assertEqual(lines.currency_id, currency)
+        self.assertAlmostEqual(lines[0].amount, 83.33)
+        self.assertAlmostEqual(sum(lines.mapped("amount")), 1_000)
+
+        disposal = self.env["asset.disposal"].create({"asset_id": asset.id, "reason": "Test"})
+        self.assertEqual(disposal.currency_id, currency)
+
+        lines[:1].posted = True
+        with self.assertRaises(UserError):
+            asset.with_user(self.officer).currency_id = self.env.company.currency_id
+
     def test_disposal_closes_schedule(self):
         asset = self._asset()
         asset.with_user(self.manager).action_compute_depreciation()

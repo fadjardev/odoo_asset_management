@@ -23,6 +23,7 @@ the Enterprise `account_asset` module.
 | **Stock opname** | Load every asset recorded at a location, mark each found / not found / damaged, validate to update conditions (missing assets become *Lost*). Prints the result. |
 | **Disposal** | Sell, scrap or donate an asset after manager approval; the book value is frozen, the gain or loss computed, and the remaining depreciation schedule closed. |
 | **Depreciation** | Monthly straight-line schedule down to the salvage value; a daily job posts the lines that fall due, and the book value follows. |
+| **Currency** | Each asset carries its own currency (the company currency by default); its depreciation, maintenance costs and disposal use it. The currency locks once depreciation is posted. |
 
 ## Installation
 
@@ -191,7 +192,7 @@ odoo -c /etc/odoo/odoo.conf -d <test-database> -i odoo_asset_management \
     --test-tags /odoo_asset_management --stop-after-init
 ```
 
-The 20 tests cover every workflow and the access matrix above. They use their own
+The 21 tests cover every workflow and the access matrix above. They use their own
 records, so they pass on a database that already holds data.
 
 ## Requirements

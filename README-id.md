@@ -23,6 +23,7 @@ Modul berjalan di **Odoo Community** dan hanya membutuhkan `hr` dan `mail`. Modu
 | **Stock opname** | Memuat semua aset yang tercatat di suatu lokasi, menandai tiap aset ditemukan / tidak ditemukan / rusak, lalu validasi untuk memperbarui kondisi (aset yang tidak ditemukan menjadi *Lost*). Hasilnya bisa dicetak. |
 | **Disposal** | Menjual, membuang atau menghibahkan aset setelah disetujui manager; nilai buku dibekukan, laba/rugi dihitung, sisa jadwal penyusutan ditutup. |
 | **Penyusutan** | Jadwal garis lurus bulanan sampai nilai residu; job harian memposting baris yang sudah jatuh tempo, dan nilai buku mengikutinya. |
+| **Mata uang** | Setiap aset punya mata uangnya sendiri (bawaannya mata uang perusahaan); penyusutan, biaya maintenance, dan disposal memakainya. Mata uang terkunci setelah ada penyusutan yang diposting. |
 
 ## Instalasi
 
@@ -193,7 +194,7 @@ odoo -c /etc/odoo/odoo.conf -d <database-test> -i odoo_asset_management \
     --test-tags /odoo_asset_management --stop-after-init
 ```
 
-Ke-20 test mencakup setiap alur kerja dan matriks akses di atas. Test memakai
+Ke-21 test mencakup setiap alur kerja dan matriks akses di atas. Test memakai
 record-nya sendiri, jadi tetap lulus di database yang sudah berisi data.
 
 ## Kebutuhan

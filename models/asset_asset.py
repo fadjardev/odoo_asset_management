@@ -72,7 +72,17 @@ class AssetAsset(models.Model):
     note = fields.Html()
     active = fields.Boolean(default=True)
     company_id = fields.Many2one("res.company", required=True, default=lambda self: self.env.company)
-    currency_id = fields.Many2one(related="company_id.currency_id")
+    currency_id = fields.Many2one(
+        "res.currency",
+        compute="_compute_currency_id",
+        store=True,
+        readonly=False,
+        precompute=True,
+        required=True,
+        tracking=True,
+        help="Currency of the purchase and salvage values; the depreciation schedule, maintenance costs "
+             "and disposal follow it. Defaults to the company currency.",
+    )
 
     # Values: visible to officers and managers only
     purchase_date = fields.Date(default=fields.Date.context_today, tracking=True)
@@ -109,6 +119,23 @@ class AssetAsset(models.Model):
                 number = self.env["ir.sequence"].next_by_code("asset.asset") or "New"
                 vals["code"] = f"{category.code}-{number}" if category.code else number
         return super().create(vals_list)
+
+    def write(self, vals):
+        if "currency_id" in vals:
+            locked = self.filtered(lambda asset: asset.currency_id.id != vals["currency_id"] and (
+                asset.state == "disposed" or asset.sudo().depreciation_line_ids.filtered("posted")
+            ))
+            if locked:
+                raise UserError(self.env._(
+                    "The currency of %s cannot change: its values are already booked in %s.",
+                    locked[0].display_name, locked[0].currency_id.name,
+                ))
+        return super().write(vals)
+
+    @api.depends("company_id")
+    def _compute_currency_id(self):
+        for asset in self:
+            asset.currency_id = asset.company_id.currency_id
 
     @api.depends("code")
     def _compute_qr_code(self):

@@ -6,6 +6,10 @@ Odoo's `<odoo series>.<major>.<minor>.<patch>` scheme.
 
 ## [Unreleased]
 
+### Added
+
+- Per-asset currency, defaulting to the company currency. The depreciation schedule, maintenance costs and disposal follow the asset's currency, and it can no longer change once depreciation is posted or the asset is disposed.
+
 ## [19.0.1.0.0] - 2026-10-28
 
 ### Added
